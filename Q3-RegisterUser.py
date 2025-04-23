@@ -13,28 +13,27 @@ class RegisterUser:
     def hash_password(self, password):
         return hashlib.sha256(password.encode()).hexdigest()
 
-    def register(self, email, password):
-        # === Pre-condition ===
-        # Email and password must be provided and valid
-        assert email and "@" in email, "Email must be in a valid format"
-        assert len(password) >= 8, "Password must be at least 8 characters long"
-        assert self.is_email_unique(email), "Email is already registered"
+    def check_invariants(self):
+        emails = [u["email"] for u in self.users]
+        assert len(emails) == len(set(emails)), "Invariant violated: Duplicate emails found"
 
-        # === Process ===
-        # Hash the password and store the user
+    def register(self, email, password):
+        # --- Pre-condition checks ---
+        assert email and "@" in email, "Precondition failed: Email must be in a valid format"
+        assert len(password) >= 8, "Precondition failed: Password must be at least 8 characters"
+        assert self.is_email_unique(email), "Precondition failed: Email is already registered"
+
+        # --- Process ---
         hashed_pw = self.hash_password(password)
         self.users.append({"email": email, "password": hashed_pw})
 
-        # === Post-condition ===
-        # The new user must be present in the list
-        assert any(u["email"] == email for u in self.users), "User was not added"
+        # --- Post-condition check ---
+        assert any(u["email"] == email for u in self.users), "Postcondition failed: User was not added"
 
-        # === Invariant ===
-        # All emails in the database must be unique
-        emails = [u["email"] for u in self.users]
-        assert len(emails) == len(set(emails)), "Duplicate emails found"
+        # --- Invariant check ---
+        self.check_invariants()
 
-        print(f"✅ User registered: {email}")
+        print(f"User registered: {email}")
 
 # Output: Demonstrating the contract in action
 reg = RegisterUser()
