@@ -40,3 +40,8 @@ reg = RegisterUser()
 
 # Perform registration
 reg.register("user@example.com", "securepassword")
+
+# Uncomment to test violations:
+# reg.register("user@example.com", "anotherpass")   # Fails: email already exists
+# reg.register("invalidemail", "12345678")          # Fails: invalid email format
+# reg.register("new@example.com", "short")          # Fails: password too short
